@@ -8,3 +8,14 @@ C:\Users\XvX\Desktop\SilksongMultiplayerMod\SilksongMultiplayer\bin\Debug\netsta
 C:\Users\XvX\Desktop\SilksongMultiplayerMod\SilksongMultiplayer\bin\Debug\netstandard2.1\SilksongMultiplayer.pdb
 C:\Users\XvX\Desktop\SilksongMultiplayerMod\SilksongMultiplayer\obj\Debug\netstandard2.1\SilksongMultiplayer.dll
 C:\Users\XvX\Desktop\SilksongMultiplayerMod\SilksongMultiplayer\obj\Debug\netstandard2.1\SilksongMultiplayer.pdb
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\bin\Debug\netstandard2.1\SilksongMultiplayer.deps.json
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\bin\Debug\netstandard2.1\SilksongMultiplayer.dll
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\bin\Debug\netstandard2.1\SilksongMultiplayer.pdb
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.csproj.AssemblyReference.cache
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.AssemblyInfoInputs.cache
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.AssemblyInfo.cs
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.csproj.CoreCompileInputs.cache
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.sourcelink.json
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.dll
+C:\Users\BobbyTC\Source\Repos\Silksong-Steam-multiplayer-mod\obj\Debug\netstandard2.1\SilksongMultiplayer.pdb

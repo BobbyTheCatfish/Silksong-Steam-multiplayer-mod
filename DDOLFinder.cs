@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public static class DDOLFinder
 {
-    // 拿到 DDOL 场景
+    // Obtain the DDOL scenario
     public static Scene GetDDOLScene()
     {
         var tmp = new GameObject("__ddol_probe__");
@@ -15,14 +15,14 @@ public static class DDOLFinder
         return ddol;
     }
 
-    // 列出 DDOL 根节点
+    // List the DDOL root nodes
     public static GameObject[] GetDDOLRoots()
     {
         var s = GetDDOLScene();
         return s.IsValid() && s.isLoaded ? s.GetRootGameObjects() : new GameObject[0];
     }
 
-    // 在 DDOL 场景按名字找对象（包含未激活）
+    // In the DDOL scenario, find objects by name (including inactive objects).
     public static List<GameObject> FindInDDOLByName(string name, bool exact = true)
     {
         var result = new List<GameObject>();
@@ -38,8 +38,8 @@ public static class DDOLFinder
         return result;
     }
 
-    // 在给定父物体里找子物体（包含未激活）
-    public static GameObject FindChildByName(GameObject parent, string childName, bool exact = true)
+    // Find child objects within a given parent object (including inactive objects)
+    public static GameObject? FindChildByName(GameObject parent, string childName, bool exact = true)
     {
         if (!parent) return null;
         foreach (var t in parent.GetComponentsInChildren<Transform>(true))
@@ -51,15 +51,15 @@ public static class DDOLFinder
         return null;
     }
 
-    // 通过“层级路径”查找（例： "Canvas/Compass Icon"）
-    public static GameObject FindChildByPath(GameObject parent, string path)
+    // Search using a "hierarchical path" (e.g., "Canvas/Compass Icon")
+    public static GameObject? FindChildByPath(GameObject parent, string path)
     {
         if (!parent || string.IsNullOrEmpty(path)) return null;
         var current = parent.transform;
         var segments = path.Split('/');
         foreach (var seg in segments)
         {
-            Transform next = null;
+            Transform? next = null;
             foreach (var t in current.GetComponentsInChildren<Transform>(true))
             {
                 if (t.parent == current && t.name == seg) { next = t; break; }
@@ -70,7 +70,7 @@ public static class DDOLFinder
         return current.gameObject;
     }
 
-    // 把 DDOL 场景的层级打印出来，便于比对真实名字/层级
+    // Print out the hierarchy of the DDOL scenario for easy comparison with the actual names/levels.
     public static void DumpDDOLTree()
     {
         var sb = new StringBuilder();
@@ -92,7 +92,7 @@ public static class DDOLFinder
     private static bool IsMatch(string actual, string want, bool exact)
     {
         if (exact) return actual == want;
-        // 模糊匹配：兼容 "(Clone)"、前后缀
+        // Fuzzy matching: compatible with "(Clone)" and prefixes/suffixes.
         return actual == want
             || actual.StartsWith(want)
             || actual.Contains(want);

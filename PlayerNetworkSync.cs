@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GlobalEnums;
 using HarmonyLib;
 using HutongGames.PlayMaker.Actions;
+using SilksongMultiplayer.NetworkData;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,7 @@ using UnityEngine.UI;
 
 namespace SilksongMultiplayer
 {
-    internal class PlayerNetworkSync : MonoBehaviour
+    public class PlayerNetworkSync : MonoBehaviour
     {
         public Steamworks.CSteamID currentRoomID;
 
@@ -57,45 +58,46 @@ namespace SilksongMultiplayer
 
             SilksongMultiplayerAPI.playerNetworkSync = this;
 
-            GameObject nameCanva = new GameObject("nameCanva");
-            nameCanva.transform.SetPositionAndRotation(this.transform.position, Quaternion.identity);
-            nameCanva.transform.SetParent(this.transform);
+            //GameObject nameCanva = new GameObject("nameCanva");
+            //nameCanva.transform.SetPositionAndRotation(this.transform.position, Quaternion.identity);
+            //nameCanva.transform.SetParent(this.transform);
 
             if (SilksongMultiplayerAPI.enterRoom)
             {
-                if(SteamMatchmaking.GetNumLobbyMembers(SilksongMultiplayerAPI.RoomManager.currentRoomID) > 1)
+                if(SteamMatchmaking.GetNumLobbyMembers(SilksongMultiplayerAPI.RoomManager.currentRoomID) > 1 && SilksongMultiplayerAPI.showNametags)
                 {
-                    canva = nameCanva.AddComponent<Canvas>();
-                    canva.renderMode = RenderMode.WorldSpace;
-                    canva.sortingLayerName = "HUD";
-                    canva.sortingLayerID = 629535577;
-                    canva.sortingOrder = 50;
+                    nameText = NametagManager.AddNametag(transform, ref canva);
+                    //canva = nameCanva.AddComponent<Canvas>();
+                    //canva.renderMode = RenderMode.WorldSpace;
+                    //canva.sortingLayerName = "HUD";
+                    //canva.sortingLayerID = 629535577;
+                    //canva.sortingOrder = 50;
 
 
-                    canva.renderMode = RenderMode.ScreenSpaceCamera;
+                    //canva.renderMode = RenderMode.ScreenSpaceCamera;
 
-                    RectTransform rect = nameCanva.GetComponent<RectTransform>();
-                    rect.sizeDelta = new Vector2(2560, 1440);
+                    //RectTransform rect = nameCanva.GetComponent<RectTransform>();
+                    //rect.sizeDelta = new Vector2(2560, 1440);
 
-                    nameText = new GameObject("nameText");
-                    nameText.transform.SetParent(nameCanva.transform);
+                    //nameText = new GameObject("nameText");
+                    //nameText.transform.SetParent(nameCanva.transform);
 
-                    // 必须有 CanvasRenderer
-                    nameText.AddComponent<CanvasRenderer>();
-                    nameText.transform.localScale = Vector3.one * 0.01f;
-                    Text text = nameText.AddComponent<Text>();
-                    text.text = SteamFriends.GetPersonaName(); // 或 SteamFriends.GetPersonaName()
-                    text.font = SilksongMultiplayerAPI.savedFont;
-                    text.fontSize = 50;
-                    text.alignment = TextAnchor.MiddleCenter;
+                    //// 必须有 CanvasRenderer
+                    //nameText.AddComponent<CanvasRenderer>();
+                    //nameText.transform.localScale = Vector3.one * 0.01f;
+                    //Text text = nameText.AddComponent<Text>();
+                    //text.text = SteamFriends.GetPersonaName(); // 或 SteamFriends.GetPersonaName()
+                    //text.font = SilksongMultiplayerAPI.savedFont;
+                    //text.fontSize = 50;
+                    //text.alignment = TextAnchor.MiddleCenter;
 
-                    ulong XvXSteamId64 = 76561198929282998UL;
-                    ulong truthSteamId64 = 76561199835946204UL;
+                    //ulong XvXSteamId64 = 76561198929282998UL;
+                    //ulong truthSteamId64 = 76561199835946204UL;
 
-                    if (SteamUser.GetSteamID().m_SteamID == XvXSteamId64 || SteamUser.GetSteamID().m_SteamID == truthSteamId64)
-                    {
-                        text.color = Color.yellow;
-                    }
+                    //if (SteamUser.GetSteamID().m_SteamID == XvXSteamId64 || SteamUser.GetSteamID().m_SteamID == truthSteamId64)
+                    //{
+                    //    text.color = Color.yellow;
+                    //}
                 }
 
 
@@ -137,14 +139,7 @@ namespace SilksongMultiplayer
                 cocoon.transform.SetParent(this.transform);
 
                 SpriteRenderer spriteRenderer = cocoon.AddComponent<SpriteRenderer>();
-
-                string folder = Path.Combine(Path.GetDirectoryName(Application.dataPath), "BepInEx", "plugins", "XvX");
-                string imagePath = Path.Combine(folder, "Hornet_death.png");
-
-                byte[] fileData = File.ReadAllBytes(imagePath);
-
-                Texture2D tex = new Texture2D(4, 4);
-                tex.LoadImage(fileData); // 现在可以识别了
+                Texture2D tex = Utils.LoadImage("Hornet_death.png", 4, 4);
 
                 Sprite sprite = Sprite.Create(
                     tex,
@@ -163,14 +158,14 @@ namespace SilksongMultiplayer
         {
             if(SilksongMultiplayerAPI.DebugText != null)
             {
-                string text = "玩家当前场景";
+                string text = "Player's current scene";
 
                 foreach(KeyValuePair<CSteamID,string> pair in SilksongMultiplayerAPI.playerSceneMap)
                 {
                     text += Environment.NewLine + SteamFriends.GetFriendPersonaName(pair.Key) + " = " + pair.Value;
                 }
 
-                text += Environment.NewLine + "场景所有权";
+                text += Environment.NewLine + "Scene ownership";
 
                 foreach (KeyValuePair<string, CSteamID> pair in SilksongMultiplayerAPI.sceneOwnersList)
                 {
@@ -224,14 +219,14 @@ namespace SilksongMultiplayer
             if (SilksongMultiplayerAPI.wideCompassIcon == null && DDOLFinder.FindInDDOLByName("Wide Map(Clone)", exact: true).Count > 0)
                 SilksongMultiplayerAPI.wideCompassIcon = DDOLFinder.FindChildByName(DDOLFinder.FindInDDOLByName("Wide Map(Clone)", exact: true)[0], "Compass Icon");
 
-            // 定时发送
+            // Scheduled sending
             if (Time.time - lastSendTime >= sendInterval)
             {
                 SendPositionToAll();
                 lastSendTime = Time.time;
             }
 
-            // 定时发送地图位置
+            // Send map location at regular intervals.
             if (Time.time - compassLastSendTime >= compassSendInterval)
             {
                 SendMapPositionToAll();
@@ -299,7 +294,7 @@ namespace SilksongMultiplayer
                         }
 
                         foreach (var state in fsm.States)
-                            Debug.Log($"FSM状态: {state.Name}");
+                            Debug.Log($"FSM state: {state.Name}");
                     }
                 }
                 */
@@ -388,7 +383,6 @@ namespace SilksongMultiplayer
         {
             Transform[] children = parent.GetComponentsInChildren<Transform>(true);
             // 注意这里传 true，表示包含 inactive 的对象
-
             foreach (Transform child in children)
             {
                 if (child.name == childName)

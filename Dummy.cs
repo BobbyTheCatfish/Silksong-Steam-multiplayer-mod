@@ -5,13 +5,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using GlobalEnums;
 using HarmonyLib;
+using SilksongMultiplayer.NetworkData;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace SilksongMultiplayer
 {
-    internal class Dummy : MonoBehaviour, IHitResponder
+    public class Dummy : MonoBehaviour, IHitResponder
     {
         HealthManager hm;
         public EnemyHitEffectsRegular hitEffectsRegular;
@@ -34,14 +35,7 @@ namespace SilksongMultiplayer
             {
                 SpriteRenderer spriteRenderer = this.gameObject.AddComponent<SpriteRenderer>();
 
-                string folder = Path.Combine(Path.GetDirectoryName(Application.dataPath), "BepInEx", "plugins", "XvX");
-                string imagePath = Path.Combine(folder, imageName);
-
-                byte[] fileData = File.ReadAllBytes(imagePath);
-
-                Texture2D tex = new Texture2D(textureSize.x, textureSize.y);
-                tex.LoadImage(fileData); // 现在可以识别了
-
+                Texture2D tex = Utils.LoadImage(imageName, textureSize.x, textureSize.y);
                 Sprite sprite = Sprite.Create(
                     tex,
                     spriteSize,

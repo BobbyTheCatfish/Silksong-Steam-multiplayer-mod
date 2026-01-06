@@ -5,13 +5,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BepInEx.Logging;
+using SilksongMultiplayer.NetworkData;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace SilksongMultiplayer
 {
-    static class SilksongMultiplayerAPI
+    
+
+    public static class SilksongMultiplayerAPI
     {
         public static bool startGame = false;
         public static bool enterRoom = false;
@@ -70,6 +73,9 @@ namespace SilksongMultiplayer
         public static bool debug = false;
         public static bool hideOuther = false;
         public static bool showComments = true;
+        public static bool showNametags = true;
+
+        internal static Dictionary<int, NetworkCustomPacket> customPackets = new Dictionary<int, NetworkCustomPacket>();
 
         public static List<CSteamID> GetRoomMembers()
         {
@@ -106,37 +112,50 @@ namespace SilksongMultiplayer
             "Driller B",
         };
 
+        public static void AddCustomPacket(NetworkCustomPacket packetHandler)
+        {
+            if (customPackets.ContainsKey(packetHandler.packetNum))
+            {
+                Debug.LogError(Environment.StackTrace);
+                Debug.LogError($"Error while registering custom packet {packetHandler.receiveHandler.Method.Name}");
+                Debug.LogError($"Custom packet with ID {packetHandler.packetNum} already exists. Not registering.");
+                return;
+            }
+
+            customPackets.Add(packetHandler.packetNum, packetHandler);
+        }
+
         public static void SetDamageScalingToCustom(this HealthManager hm)
         {
-            // 获取 private nested class 类型
+            // Get the type of a private nested class.
             Type nestedType = typeof(HealthManager).GetNestedType("DamageScalingConfig", BindingFlags.NonPublic);
             if (nestedType == null)
             {
-                Debug.LogError("找不到 DamageScalingConfig 类型");
+                Debug.LogError("The type `DamageScalingConfig` could not be found.");
                 return;
             }
 
-            // 创建一个实例（默认构造函数）
+            // Create an instance (using the default constructor)
             object newConfig = Activator.CreateInstance(nestedType);
             if (newConfig == null)
             {
-                Debug.LogError("无法创建 DamageScalingConfig 实例");
+                Debug.LogError("Unable to create DamageScalingConfig instance.");
                 return;
             }
 
-            // 可以用反射修改 newConfig 内部字段，如果你知道字段名
+            // You can use reflection to modify the internal fields of `newConfig`, if you know the field names.
             FieldInfo multField = nestedType.GetField("someMultiplierField", BindingFlags.NonPublic | BindingFlags.Instance);
             if (multField != null)
             {
-                multField.SetValue(newConfig, 2.0f); // 举例：把倍率改为 2
+                multField.SetValue(newConfig, 2.0f); // Example: Change the multiplier to 2
             }
 
-            // 设置到 hm 实例的 private 字段
+            // Set the private field of the `hm` instance.
             FieldInfo damageScalingField = typeof(HealthManager).GetField("damageScaling", BindingFlags.NonPublic | BindingFlags.Instance);
             if (damageScalingField != null)
             {
                 damageScalingField.SetValue(hm, newConfig);
-                Debug.Log("damageScaling 已替换");
+                Debug.Log("damageScaling has been replaced.");
             }
         }
 
@@ -144,41 +163,41 @@ namespace SilksongMultiplayer
         {
             if (hm == null)
             {
-                Debug.LogError("HealthManager 实例为空");
+                Debug.LogError("HealthManager instance is null.");
                 return;
             }
 
-            // 找到 ItemDropGroup 类型
+            // Find the ItemDropGroup type.
             var itemDropGroupType = typeof(HealthManager).GetNestedType(
                 "ItemDropGroup", BindingFlags.NonPublic);
 
             if (itemDropGroupType == null)
             {
-                Debug.LogError("找不到 HealthManager.ItemDropGroup 类型");
+                Debug.LogError("The type HealthManager.ItemDropGroup could not be found.");
                 return;
             }
 
-            // 构造一个新的 List<ItemDropGroup>
+            // Constructing a new List<ItemDropGroup>
             var listType = typeof(List<>).MakeGenericType(itemDropGroupType);
             var newList = Activator.CreateInstance(listType);
 
-            // 这里 newList 还是空的，你也可以通过反射往里面加元素
-            // 比如 listType.GetMethod("Add") 调用来添加 ItemDropGroup 实例
+            // The `newList` is still empty here; you can also add elements to it using reflection.
+            // For example, the `listType.GetMethod("Add")` call is used to add an `ItemDropGroup` instance.
 
-            // 找到 itemDropGroups 字段
+            // Find the `itemDropGroups` field.
             var field = typeof(HealthManager).GetField("itemDropGroups",
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (field == null)
             {
-                Debug.LogError("找不到 itemDropGroups 字段");
+                Debug.LogError("The `itemDropGroups` field could not be found.");
                 return;
             }
 
             // 替换掉原有的掉落组
             field.SetValue(hm, newList);
 
-            Debug.Log("成功替换 itemDropGroups 列表");
+            Debug.Log("Successfully replaced the itemDropGroups list.");
         }
 
         public static void CloneAnimatorOfObject(GameObject gameObject, GameObject cloneTarget)
@@ -208,7 +227,7 @@ namespace SilksongMultiplayer
 
             CSteamID memberID = new CSteamID(targetID);
 
-            Debug.Log("切换boss目标为：" + memberID.m_SteamID);
+            Debug.Log("Switching boss target to：" + memberID.m_SteamID);
 
             if(GameObject.Find(enemyName) == false || GameObject.Find(enemyName).GetComponent<EnemyAvatar>() == false)
                 return;
@@ -217,12 +236,12 @@ namespace SilksongMultiplayer
 
             if (SilksongMultiplayerAPI.remotePlayers.TryGetValue(memberID, out PlayerAvatar playerAvatar))
             {
-                Debug.Log("切换" + enemy.name +"目标为其他玩家");
+                Debug.Log("Switch target " + enemy.name + " to another player");
                 enemy.TargetPlayer = playerAvatar.gameObject;
             }
             else
             {
-                Debug.Log("切换" + enemy.name +"目标为自身");
+                Debug.Log("Switch target " + enemy.name + " to self");
                 enemy.TargetPlayer = SilksongMultiplayerAPI.Hero_Hornet;
             }
         }
@@ -245,7 +264,7 @@ namespace SilksongMultiplayer
 
         public static void OnChangeScene(string sceneName)
         {
-            // ===== 新增：记录自己离开前的场景（oldScene）=====
+            // ===== Added: Record the scene before you leave（oldScene）=====
             string oldScene = null;
             if (roomOwner)
             {
@@ -258,7 +277,7 @@ namespace SilksongMultiplayer
             {
                 if (!sceneOwnersList.TryGetValue(sceneName, out CSteamID ownerId))
                 {
-                    // 先清掉旧的“我”所拥有的场景映射（如果有）
+                    // First, clear any existing scene mappings associated with the old "me" (if any).
                     string owned = GetSceneNameBySceneOwnersSteamID(SteamUser.GetSteamID());
                     if (owned != null)
                     {
@@ -276,10 +295,10 @@ namespace SilksongMultiplayer
                     NetworkDataSender.SendSceneOwner(ownerId.m_SteamID, sceneName);
                 }
 
-                // ===== 原逻辑：更新自己所在场景 =====
+                // ===== Original logic: Update the scene where the user is located. =====
                 playerSceneMap[SteamUser.GetSteamID()] = sceneName;
 
-                // ===== 新增：如果我离开的 oldScene 的 owner 是我，且我离开后该场景没人了 -> 清除该场景所有权 =====
+                // ===== Added: If I am the owner of the oldScene I'm leaving, and no one is left in that scene after I leave -> Clear ownership of that scene. =====
                 if (!string.IsNullOrEmpty(oldScene) && oldScene != sceneName)
                 {
                     if (sceneOwnersList.TryGetValue(oldScene, out var oldOwner) && oldOwner == SteamUser.GetSteamID())
@@ -287,7 +306,7 @@ namespace SilksongMultiplayer
                         bool anyoneLeftInOldScene = false;
                         foreach (var kv in playerSceneMap)
                         {
-                            if (kv.Key == SteamUser.GetSteamID()) continue; // 我已经离开 oldScene 了
+                            if (kv.Key == SteamUser.GetSteamID()) continue; // I have already left oldScene.
                             if (kv.Value == oldScene)
                             {
                                 anyoneLeftInOldScene = true;
@@ -303,7 +322,7 @@ namespace SilksongMultiplayer
                 }
             }
 
-            // 以下逻辑保持不变
+            // The following logic remains unchanged.
             if (currentScene == currentOwnedScene)
             {
                 foreach (HealthManager hm in HealthManager.EnumerateActiveEnemies())
@@ -327,12 +346,12 @@ namespace SilksongMultiplayer
         {
             if (!roomOwner) return;
 
-            // 更新玩家所在场景
+            // Update the player's current scene.
             playerSceneMap[steamID] = sceneName;
 
             if (!sceneOwnersList.TryGetValue(sceneName, out CSteamID existing))
             {
-                // 这个玩家以前拥有的场景
+                // This player previously owned the scene.
                 string prev = GetSceneNameBySceneOwnersSteamID(steamID);
 
                 if (prev != null && prev != sceneName)
@@ -373,7 +392,7 @@ namespace SilksongMultiplayer
                 return true;
             }
 
-            return false; // 没人接管
+            return false; // No one is taking over.
         }
 
         private static int CountPlayersInScene(string sceneName, CSteamID? excluding = null)
@@ -397,17 +416,17 @@ namespace SilksongMultiplayer
             if (!sceneOwnersList.TryGetValue(sceneName, out var currentOwner)) return;
             if (currentOwner != leavingOwner) return;
 
-            // 先尝试转交
+            // Try transferring it first.
             bool transferred = TryTransferSceneOwner(sceneName, leavingOwner);
 
             if (transferred) return;
 
-            // 转交失败：如果场景已经空了，就清掉 owner
-            // 注意：排除 leavingOwner（把他当作已离开）
+            // Transfer failed: If the scene is already empty, clear the owner.
+            // Note: Exclude leavingOwner (treat them as already having left).
             if (IsSceneEmpty(sceneName, excluding: leavingOwner))
             {
                 sceneOwnersList.Remove(sceneName);
-                // 可选：广播“无 owner”（取决于你协议是否支持）
+                // Optional: Broadcast "no owner" (depending on whether your protocol supports this).
                 // NetworkDataSender.SendSceneOwner(0, sceneName);
             }
         }
@@ -423,7 +442,7 @@ namespace SilksongMultiplayer
                     return kvp.Key;
                 }
             }
-            return null; // 没找到
+            return null; // Not found
         }
     }
 }

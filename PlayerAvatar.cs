@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GlobalEnums;
+using SilksongMultiplayer.NetworkData;
 using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,14 +12,14 @@ using UnityEngine.UI;
 
 namespace SilksongMultiplayer
 {
-    internal class PlayerAvatar : MonoBehaviour
+    public class PlayerAvatar : MonoBehaviour
     {
         private Vector3 positionBias = Vector3.zero;
         private Vector3 targetPosition;
         private Vector3 savedPosition;
         private float movingProgress = 0;
         private float lastUpdateTime;
-        private float interpolationDelay = 0.1f; // 与发送间隔匹配
+        private float interpolationDelay = 0.1f; // Matches the sending interval
 
 
         private Vector3 compassTargetPosition;
@@ -73,41 +74,44 @@ namespace SilksongMultiplayer
             Skin.ChangeSkinOnObject(this.gameObject, skinName);
 
             this.steamID = steamID;
-            Debug.Log($"玩家对象已初始化，SteamID: {steamID}");
+            Debug.Log($"The player object has been initialized，SteamID: {steamID}");
 
-            GameObject nameCanva = new GameObject("nameCanva");
-            nameCanva.transform.SetPositionAndRotation(this.transform.position, Quaternion.identity);
-            nameCanva.transform.SetParent(this.transform);
+            
 
-            canva = nameCanva.AddComponent<Canvas>();
-            canva.renderMode = RenderMode.ScreenSpaceCamera;
-            canva.sortingLayerName = "HUD";
-            canva.sortingLayerID = 629535577;
-            canva.sortingOrder = 50;
-
-            RectTransform rect = nameCanva.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(2560, 1440);
-
-            nameText = new GameObject("nameText");
-            nameText.transform.SetParent(nameCanva.transform);
-
-            // 必须有 CanvasRenderer
-            nameText.AddComponent<CanvasRenderer>();
-            nameText.transform.localScale = Vector3.one * 0.01f;
-            Text text = nameText.AddComponent<Text>();
-            text.text = SteamFriends.GetFriendPersonaName(steamID); // 或 SteamFriends.GetPersonaName()
-            text.font = SilksongMultiplayerAPI.savedFont;
-            text.fontSize = 50;
-            text.alignment = TextAnchor.MiddleCenter;
-
-
-            ulong XvXSteamId64 = 76561198929282998UL;
-            ulong truthSteamId64 = 76561199835946204UL;
-
-            if (steamID.m_SteamID == XvXSteamId64 || steamID.m_SteamID == truthSteamId64)
+            if (SilksongMultiplayerAPI.showNametags)
             {
-                text.color = Color.yellow;
+                nameText = NametagManager.AddNametag(transform, ref canva);
+                //canva = nameCanva.AddComponent<Canvas>();
+                //canva.renderMode = RenderMode.ScreenSpaceCamera;
+                //canva.sortingLayerName = "HUD";
+                //canva.sortingLayerID = 629535577;
+                //canva.sortingOrder = 50;
+
+                //RectTransform rect = nameCanva.GetComponent<RectTransform>();
+                //rect.sizeDelta = new Vector2(2560, 1440);
+
+                //nameText = new GameObject("nameText");
+                //nameText.transform.SetParent(nameCanva.transform);
+
+                //// 必须有 CanvasRenderer
+                //nameText.AddComponent<CanvasRenderer>();
+                //nameText.transform.localScale = Vector3.one * 0.01f;
+                //Text text = nameText.AddComponent<Text>();
+                //text.text = SteamFriends.GetFriendPersonaName(steamID); // 或 SteamFriends.GetPersonaName()
+                //text.font = SilksongMultiplayerAPI.savedFont;
+                //text.fontSize = 50;
+                //text.alignment = TextAnchor.MiddleCenter;
+
+
+                //ulong XvXSteamId64 = 76561198929282998UL;
+                //ulong truthSteamId64 = 76561199835946204UL;
+
+                //if (steamID.m_SteamID == XvXSteamId64 || steamID.m_SteamID == truthSteamId64)
+                //{
+                //    text.color = Color.yellow;
+                //}
             }
+
 
 
             //GameObject compassIcon = new GameObject("CompassIconClone");

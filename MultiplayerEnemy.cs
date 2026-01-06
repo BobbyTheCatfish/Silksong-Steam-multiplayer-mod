@@ -6,6 +6,7 @@ using System.Text;
 using HarmonyLib;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using SilksongMultiplayer.NetworkData;
 using UnityEngine;
 
 namespace SilksongMultiplayer
@@ -29,7 +30,7 @@ namespace SilksongMultiplayer
 
             if (__instance.GameObject != null && __instance.GameObject.GetComponent<EnemyAvatar>() && __instance.GameObject.GetComponent<EnemyAvatar>().isOwner == false && __instance.GameObject.GetComponent<EnemyAvatar>().disConnect == false)
             {
-                UnityEngine.Debug.Log($"[HOOK] 拦截试图事件: {fsmEvent.Name}");
+                UnityEngine.Debug.Log($"[HOOK] Intercepting attempted events: {fsmEvent.Name}");
                 return false;
             }
 

@@ -9,6 +9,7 @@
     using HarmonyLib;
     using HutongGames.PlayMaker.Actions;
     using QuestPlaymakerActions;
+    using SilksongMultiplayer.NetworkData;
     using Steamworks;
     using TeamCherry.Localization;
     using UnityEngine;
@@ -18,7 +19,7 @@
     {
         static void Prefix()
         {
-            Debug.Log("目标方法被调用了！");
+            Debug.Log("The target method has been called!");
         }
     }
 
@@ -26,7 +27,7 @@
     public class Plugin : BaseUnityPlugin
     {
 
-        // 定义配置项
+        // Define configuration items
         private ConfigEntry<bool> enablePvP;
         private ConfigEntry<float> BossHPmultiplier;
         private ConfigEntry<float> EnemyHPmultiplier;
@@ -38,30 +39,35 @@
         private ConfigEntry<string> SkinLink4;
 
         private ConfigEntry<bool> ShowComments;
+        private ConfigEntry<bool> ShowNametags;
+
 
         void Awake()
         {
-            // 初始化配置（如果配置文件里没有，就会写入默认值）
-            enablePvP = Config.Bind("General", "enablePvP", false, "是否开启pvp");
+            // Initialize the configuration (if the configuration file does not exist, default values ​​will be written).
+            enablePvP = Config.Bind("General", "enablePvP", false, "Enable PvP?");
 
             SilksongMultiplayerAPI.enablePvP = enablePvP.Value;
 
-            ShowComments = Config.Bind("General", "ShowComments", true, "是否开启留言");
+            ShowComments = Config.Bind("General", "ShowComments", true, "Should comments be enabled?");
             SilksongMultiplayerAPI.showComments = ShowComments.Value;
 
-            BossHPmultiplier = Config.Bind("General", "BossHPmultiplier", 1f, "boss血量倍率(对于每个额外玩家，设置为0不加血量，设置为1则每多一个玩家血量加一倍)");
+            ShowNametags = Config.Bind("General", "ShowNames", true, "Should names be shown above players?");
+            SilksongMultiplayerAPI.showNametags = ShowNametags.Value;
+
+            BossHPmultiplier = Config.Bind("General", "BossHPmultiplier", 1f, "Boss health multiplier (Setting it to 0 means no extra health for each additional player; setting it to 1 means the boss's health doubles for each additional player).");
 
             SilksongMultiplayerAPI.BossHPmultiplier = BossHPmultiplier.Value;
 
 
-            EnemyHPmultiplier = Config.Bind("General", "EnemyHPmultiplier", 0f, "普通敌人血量倍率(对于每个额外玩家，设置为0不加血量，设置为1则每多一个玩家血量加一倍)");
+            EnemyHPmultiplier = Config.Bind("General", "EnemyHPmultiplier", 0f, "Normal enemy health multiplier (Setting it to 0 means no extra health for each additional player; setting it to 1 means the health doubles for each additional player).");
             SilksongMultiplayerAPI.EnemyHPmultiplier = EnemyHPmultiplier.Value;
 
-            SkinName = Config.Bind("Skin", "SkinName", "default", "皮肤名称，对应皮肤文件夹名称，尽量不要和其他皮肤重复然后加上皮肤版本号，名称模板(abcd123)");
-            SkinLink1 = Config.Bind("Skin", "SkinLink1", "", "皮肤图片链接，对应图片knight atlas0");
-            SkinLink2 = Config.Bind("Skin", "SkinLink2", "", "皮肤图片链接，对应图片knight atlas1");
-            SkinLink3 = Config.Bind("Skin", "SkinLink3", "", "皮肤图片链接，对应图片knight atlas2");
-            SkinLink4 = Config.Bind("Skin", "SkinLink4", "", "皮肤图片链接，对应图片knight atlas3");
+            SkinName = Config.Bind("Skin", "SkinName", "default", "Skin name, corresponding to the skin folder name.  Try to avoid duplicating names with other skins, and include the skin version number. Name template: (abcd123)");
+            SkinLink1 = Config.Bind("Skin", "SkinLink1", "", "Skin image link, corresponding to image knight atlas0");
+            SkinLink2 = Config.Bind("Skin", "SkinLink2", "", "Skin image link, corresponding to image knight atlas1");
+            SkinLink3 = Config.Bind("Skin", "SkinLink3", "", "Skin image link, corresponding to image knight atlas2");
+            SkinLink4 = Config.Bind("Skin", "SkinLink4", "", "Skin image link, corresponding to image knight atlas3");
 
             SilksongMultiplayerAPI.skinName = SkinName.Value;
             SilksongMultiplayerAPI.skinLink1 = SkinLink1.Value;
@@ -76,8 +82,9 @@
 
             Harmony harmony = new Harmony("com.XvX");
             harmony.PatchAll();
+            Harmony.CreateAndPatchAll(typeof(Chat.ChatUI), "com.XvX");
 
-            Debug.Log("初始化大厅系统");
+            Debug.Log("Initializing the lobby system.");
 
             SilksongMultiplayerAPI.RoomManagerObject = GameObject.Instantiate(new GameObject("LobbyManager"));
             SilksongMultiplayerAPI.RoomManagerObject.AddComponent<RoomManager>();
@@ -92,10 +99,10 @@
     [HarmonyPatch(typeof(StartManager), nameof(StartManager.SwitchToMenuScene))]
     static class RestoreLanguagePatch
     {
-        // 前置方法
+        // Preprocessing methods
         static void Prefix()
         {
-            Debug.Log("[Harmony] RestoreLanguageSelection 被调用");
+            Debug.Log("[Harmony] RestoreLanguageSelection Called");
 
             SilksongMultiplayerAPI.RoomManagerObject = GameObject.Instantiate(new GameObject("LobbyManager"));
             SilksongMultiplayerAPI.RoomManagerObject.AddComponent<RoomManager>();
@@ -108,9 +115,9 @@
             //Logger.LogInfo($"LobbyManager is start");
 
 
-            // 如果想直接替换返回值，可以：
+            // If you want to directly replace the return value, you can:
             // __result = "en";
-            // return false; // 阻止原方法执行
+            // return false; // Prevent the original method from executing
         }
     }
 }

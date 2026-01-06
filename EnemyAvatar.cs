@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Text;
 using GlobalEnums;
+using SilksongMultiplayer.NetworkData;
 using Steamworks;
 using TMProOld;
 using UnityEngine;
 
 namespace SilksongMultiplayer
 {
-    internal class EnemyAvatar : MonoBehaviour
+    class EnemyAvatar : MonoBehaviour
     {
         private Vector3 targetPosition;
         private Vector3 savedPosition;
         private float movingProgress = 0;
         private float lastUpdateTime;
-        private float interpolationDelay = 0.1f; // 与发送间隔匹配
+        private float interpolationDelay = 0.1f; // Matches the sending interval.
 
         private float lastSendTime;
-        private const float sendInterval = 0.03f; // 30ms 发送一次
+        private const float sendInterval = 0.03f; // Send once every 30ms.
 
         public GameObject TargetPlayer = SilksongMultiplayerAPI.Hero_Hornet;
         private float BossTargetChangeCounter = 0;
@@ -133,7 +134,7 @@ namespace SilksongMultiplayer
             }
             else
             {
-                // 定时发送
+                // Scheduled sending
                 if (Time.time - lastSendTime >= sendInterval)
                 {
                     if (died == false)
@@ -172,7 +173,7 @@ namespace SilksongMultiplayer
                         }
 
 
-                        Debug.Log("切换boss目标为：" + memberID.m_SteamID);
+                        Debug.Log("Switching boss target to：" + memberID.m_SteamID);
 
                         SilksongMultiplayerAPI.ChangeEnemyTarget(memberID.m_SteamID, this.gameObject.name);
                         NetworkDataSender.SendEnemyTargetData(memberID.m_SteamID, this.gameObject.name, SilksongMultiplayerAPI.currentScene);
@@ -203,7 +204,7 @@ namespace SilksongMultiplayer
                             }
                         }
 
-                        Debug.Log("最近目标为：" + nearestObject.name);
+                        Debug.Log("The recent target is：" + nearestObject.name);
                         if (TargetPlayer != nearestObject)
                         {
                             SilksongMultiplayerAPI.ChangeEnemyTarget(memberID.m_SteamID, this.gameObject.name);

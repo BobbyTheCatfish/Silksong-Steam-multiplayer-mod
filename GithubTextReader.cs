@@ -15,7 +15,7 @@ public class FeedbackEntry
 
 public class GithubTextReader : MonoBehaviour
 {
-    // 换成你自己的 raw 链接
+    // Replace this with your own raw link.
     private const string RawUrl =
         "https://raw.githubusercontent.com/233XvX233/Silksong-Steam-multiplayer-mod-data/refs/heads/main/comments.txt";
 
@@ -46,16 +46,16 @@ public class GithubTextReader : MonoBehaviour
         }
     }
 
-    // 解析你给的格式：key: value，每条记录之间用空行分隔
+    // The format you provided is parsed as: key: value, with each record separated by a blank line.
     private static List<FeedbackEntry> ParseEntries(string raw)
     {
         var results = new List<FeedbackEntry>();
         if (string.IsNullOrWhiteSpace(raw)) return results;
 
-        // 统一换行符
+        // Standardize line breaks
         raw = raw.Replace("\r\n", "\n").Replace("\r", "\n");
 
-        // 用空行切块（允许多个空行）
+        // Split into blocks using blank lines (multiple blank lines are allowed).
         string[] blocks = raw.Split(new string[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (string b in blocks)
@@ -96,7 +96,7 @@ public class GithubTextReader : MonoBehaviour
                 }
             }
 
-            // 简单校验：至少要有 sceneName 和 message 才算一条
+            // Simple validation: A message is considered valid only if it contains at least a `sceneName` and a `message`.
             if (!string.IsNullOrEmpty(entry.sceneName) && entry.message != null)
                 results.Add(entry);
         }

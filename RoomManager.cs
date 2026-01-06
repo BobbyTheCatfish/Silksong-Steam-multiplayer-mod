@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using GlobalEnums;
 using HutongGames.PlayMaker;
 using InControl;
+using SilksongMultiplayer.Chat;
+using SilksongMultiplayer.MainMenu;
 using Steamworks;
 using TMProOld;
 using UnityEngine;
@@ -24,7 +26,7 @@ using static CutsceneHelper;
 
 namespace SilksongMultiplayer
 {
-    class RoomManager : MonoBehaviour
+    public class RoomManager : MonoBehaviour
     {
         public Steamworks.CSteamID currentRoomID;
         public Steamworks.CSteamID playerID;
@@ -49,6 +51,7 @@ namespace SilksongMultiplayer
         public void Start()
         {
             Init();
+            gameObject.AddComponent<ChatUI>();
         }
 
         public void Invite()
@@ -118,7 +121,7 @@ namespace SilksongMultiplayer
         {
             if (enterRoom && SilksongMultiplayerAPI.PlayerListText != null)
             {
-                string playerList = "玩家列表";
+                string playerList = "Player List";
                 int memberCount = SteamMatchmaking.GetNumLobbyMembers(currentRoomID);
                 for (int i = 0; i < memberCount; i++)
                 {
@@ -134,7 +137,7 @@ namespace SilksongMultiplayer
         {
             if (!scene.IsValid() || !scene.isLoaded)
             {
-                Debug.LogError("Scene 无效或未加载");
+                Debug.LogError("Scene invalid or not loaded.");
                 return null;
             }
 
@@ -158,7 +161,7 @@ namespace SilksongMultiplayer
 
             if (target == null)
             {
-                Debug.LogWarning($"在场景 {scene.name} 中未找到对象: {objectName}");
+                Debug.LogWarning($"Object not found in scene {scene.name}: {objectName}");
                 return null;
             }
 
@@ -183,7 +186,7 @@ namespace SilksongMultiplayer
 
                 SteamMatchmaking.SetLobbyData(currentRoomID, "name", SteamFriends.GetPersonaName().ToString());
 
-                Debug.Log("大厅创建成功，ID: " + currentRoomID);
+                Debug.Log("Lobby created successfully，ID: " + currentRoomID);
                 enterRoom = true;
             }
         }
@@ -192,7 +195,7 @@ namespace SilksongMultiplayer
         public void OnJoinRequested(GameLobbyJoinRequested_t callback)
         {
             CSteamID inviterSteamID = callback.m_steamIDFriend;
-            Debug.Log("收到来自玩家 " + SteamFriends.GetFriendPersonaName(inviterSteamID) + " 的邀请");
+            Debug.Log("Received from the player " + SteamFriends.GetFriendPersonaName(inviterSteamID) + " invitation");
 
             if (SilksongMultiplayerAPI.createLobbyButton != null)
                 Destroy(SilksongMultiplayerAPI.createLobbyButton);
@@ -219,13 +222,13 @@ namespace SilksongMultiplayer
             for (int i = 0; i < memberCount; i++)
             {
                 CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(currentRoomID, i);
-                Debug.Log("大厅成员 " + SteamFriends.GetFriendPersonaName(memberID) + " SteamID: " + memberID);
+                Debug.Log("Lobby Member " + SteamFriends.GetFriendPersonaName(memberID) + " SteamID: " + memberID);
             }
 
 
             if (enterRoom && SilksongMultiplayerAPI.PlayerListText != null)
             {
-                string playerList = "玩家列表";
+                string playerList = "Player List";
                 for (int i = 0; i < memberCount; i++)
                 {
                     CSteamID memberID = SteamMatchmaking.GetLobbyMemberByIndex(currentRoomID, i);
@@ -267,7 +270,7 @@ namespace SilksongMultiplayer
                 {
                     GameObject crawler = FindObjectInScene(unityScene, "MossBone Crawler");
 
-                    Debug.Log("已找到");
+                    Debug.Log("Found");
                     SilksongMultiplayerAPI.sampleEnemyHitEffectsProfile = crawler.GetComponent<EnemyHitEffectsRegular>().Profile;
 
                     SceneManager.UnloadSceneAsync(unityScene);
@@ -297,7 +300,7 @@ namespace SilksongMultiplayer
             {
                 createButton = true;
                 GameObject button = GameObject.Instantiate(GameObject.Find("OptionsButton"), GameObject.Find("OptionsButton").transform.parent);
-                button.transform.GetChild(0).GetComponent<Text>().text = "创建大厅";
+                button.transform.GetChild(0).GetComponent<Text>().text = "Create a lobby";
                 button.GetComponent<EventTrigger>().enabled = false;
                 button.AddComponent<CreateLobbyButton>();
                 SilksongMultiplayerAPI.createLobbyButton = button;

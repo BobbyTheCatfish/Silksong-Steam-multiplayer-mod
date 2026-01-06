@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class RuntimeFeedbackUI : MonoBehaviour
 {
-    // 你要禁用的“游戏操作脚本”（玩家移动、相机、攻击等）
+    // You want to disable the "game control scripts" (player movement, camera, attacks, etc.)
     [Header("Disable these while UI is open")]
     public MonoBehaviour[] disableWhileOpen = new MonoBehaviour[0];
 
@@ -18,7 +18,7 @@ public class RuntimeFeedbackUI : MonoBehaviour
 
     void Update()
     {
-        // 打开/关闭 UI（你可以改键）
+        // Open/close the UI (you can change the keybind).
         if (Input.GetKeyDown(KeyCode.F6))
         {
             if (canvasGO == null) CreateUI();
@@ -26,7 +26,7 @@ public class RuntimeFeedbackUI : MonoBehaviour
             else Close();
         }
 
-        // UI 打开时：Enter 提交，Esc 取消
+        // When the UI is open: Press Enter to submit, press Esc to cancel.
         if (isOpen)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -49,7 +49,7 @@ public class RuntimeFeedbackUI : MonoBehaviour
         canvasGO.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         canvasGO.AddComponent<GraphicRaycaster>();
 
-        // EventSystem（必须）
+        // EventSystem (required)
         if (FindObjectOfType<EventSystem>() == null)
         {
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
@@ -79,11 +79,11 @@ public class RuntimeFeedbackUI : MonoBehaviour
         inputField.textComponent = text;
 
         // Placeholder
-        Text placeholder = CreateText("Placeholder", inputGO.transform, "留下线痕…（Enter提交 / Esc取消）");
+        Text placeholder = CreateText("Placeholder", inputGO.transform, "Leave feedback... (Enter to submit / Esc to cancel)");
         placeholder.color = Color.gray;
         inputField.placeholder = placeholder;
 
-        // 默认先隐藏
+        // Hidden by default.
         panel.SetActive(false);
         isOpen = false;
     }
@@ -93,15 +93,15 @@ public class RuntimeFeedbackUI : MonoBehaviour
         isOpen = true;
         panel.SetActive(true);
 
-        // 清空并聚焦输入框
+        // Clear and focus the input field.
         inputField.text = "";
         inputField.ActivateInputField();
 
-        // 解锁鼠标（如果你游戏锁鼠标）
+        // Unlock the mouse (if your game locks the mouse).
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // 禁用游戏操作脚本
+        // Disable game operation scripts.
         foreach (var c in disableWhileOpen)
         {
             if (c != null) c.enabled = false;
@@ -113,11 +113,11 @@ public class RuntimeFeedbackUI : MonoBehaviour
         isOpen = false;
         panel.SetActive(false);
 
-        // 恢复鼠标（按你的游戏需求决定是否锁回去）
+        // Restore the mouse cursor (decide whether to lock it back based on your game requirements).
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // 恢复游戏操作脚本
+        // Restore game operation script
         foreach (var c in disableWhileOpen)
         {
             if (c != null) c.enabled = true;
@@ -127,11 +127,11 @@ public class RuntimeFeedbackUI : MonoBehaviour
     void Submit()
     {
         string msg = inputField.text.Trim();
-        if (msg.Length < 2) return; // 你后端要求 >=2
+        if (msg.Length < 2) return; // Your backend requires a version greater than or equal to 2.
 
         Debug.Log("Feedback: " + msg);
 
-        // TODO: 接你现有发送器（示例）
+        // TODO: Connect to your existing transmitter (example)
         Vector2 playerPos = SilksongMultiplayerAPI.Hero_Hornet.transform.position;
 
         SilksongMultiplayerAPI.RoomManager.feedbackSender.SendFeedback(playerPos, msg);
@@ -142,7 +142,7 @@ public class RuntimeFeedbackUI : MonoBehaviour
         Close();
     }
 
-    // ===== 工具方法 =====
+    // ===== Tools and methods =====
     GameObject CreateUIObject(string name, Transform parent)
     {
         GameObject go = new GameObject(name, typeof(RectTransform));

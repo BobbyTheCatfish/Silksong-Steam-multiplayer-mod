@@ -7,7 +7,7 @@ using UnityEngine;
 public static class Skin
 {
     public static Dictionary<string, Texture2D> keyValuePairs = new Dictionary<string, Texture2D>();
-    public static string GetCurrentTextureName(GameObject go)
+    public static string? GetCurrentTextureName(GameObject go)
     {
         if (go == null) return null;
 
@@ -29,7 +29,7 @@ public static class Skin
 
     public static void ChangeSkinOnObject(GameObject gameObject,string skinName)
     {
-        //Debug.Log("收到更换贴图请求");
+        //Debug.Log("Received a request to change the skin.");
         tk2dBaseSprite sprite = gameObject.GetComponent<tk2dBaseSprite>();
         tk2dSpriteCollectionData cloned = CloneCollection(sprite.Collection);
         var appliedAtlases = new Texture2D[cloned.materials.Length];
@@ -79,7 +79,7 @@ public static class Skin
         return matId;
     }
 
-    public static Texture2D LoadTextureFromGameRoot(string relativePathFromRoot, bool readable = true)
+    public static Texture2D? LoadTextureFromGameRoot(string relativePathFromRoot, bool readable = true)
     {
         // 例：relativePathFromRoot = "Mods/Customizer/MySkin/atlas0.png"
         string fullPath = Path.Combine(Paths.GameRootPath, relativePathFromRoot);
@@ -97,10 +97,10 @@ public static class Skin
 
         byte[] bytes = File.ReadAllBytes(fullPath);
 
-        // TextureFormat 通常用 RGBA32 就行；尺寸会被 LoadImage 覆盖
+        // TextureFormat usually defaults to RGBA32; the dimensions will be overridden by LoadImage.
         var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
 
-        // readable=false 会让像素不可读，但显存更省；看你要不要后续 GetPixels
+        // Setting `readable=false` makes the pixels unreadable, but saves more video memory; it depends on whether you need to use `GetPixels` later.
         bool ok = ImageConversion.LoadImage(tex, bytes, !readable);
         if (!ok)
         {
@@ -116,21 +116,21 @@ public static class Skin
     {
         if (sprite == null || cloned == null) return;
 
-        int id = sprite.spriteId;      // 记住当前 spriteId（很重要）
+        int id = sprite.spriteId;      // Remember the current spriteId (this is very important).
         cloned.name = sprite.Collection.name;
-        sprite.Collection = cloned;    // ✅ 指向克隆 collection
-        sprite.SetSprite(id);          // ✅ 刷新显示
+        sprite.Collection = cloned;    // ✅ Pointing to the cloned collection
+        sprite.SetSprite(id);          // ✅ Refresh display
     }
 
     static tk2dSpriteCollectionData CloneCollection(tk2dSpriteCollectionData original)
     {
         if (original == null) return null;
 
-        // 1) 克隆 collection（ScriptableObject）
+        // 1) clone collection（ScriptableObject）
         var clone = Object.Instantiate(original);
         clone.name = original.name + "_CLONE";
 
-        // 2) 重要：克隆 materials（但不改 mainTexture）
+        // 2) Important: Clone the materials (but do not change the main texture).
         if (clone.materials != null && clone.materials.Length > 0)
         {
             var mats = new Material[clone.materials.Length];
@@ -139,7 +139,7 @@ public static class Skin
                 var src = clone.materials[i];
                 if (src == null) continue;
 
-                var m = new Material(src);   // ✅ 独立 material
+                var m = new Material(src);   // ✅ Independent material
                 m.name = src.name + "_CLONE";
                 mats[i] = m;
             }
@@ -152,10 +152,10 @@ public static class Skin
             clone.material = m;
         }
 
-        // 3) 如果有 textures[]，保持引用（不替换）
-        //    这里什么都不做即可
+        // 3) If `textures[]` exists, maintain the reference (do not replace it).
+        // No action is needed here.
 
-        // 4) 刷新内部索引（有就调，没有也没事）
+        // 4) Refresh the internal index (call this function if it exists, otherwise it's fine).
         try { clone.InitDictionary(); } catch { }
 
         return clone;
