@@ -9,6 +9,7 @@
     using HarmonyLib;
     using HutongGames.PlayMaker.Actions;
     using QuestPlaymakerActions;
+    using SilksongMultiplayer.Chat;
     using SilksongMultiplayer.NetworkData;
     using Steamworks;
     using TeamCherry.Localization;
@@ -41,6 +42,7 @@
         private ConfigEntry<bool> ShowComments;
         private ConfigEntry<bool> ShowNametags;
 
+        private ChatUI chat = new ChatUI();
 
         void Awake()
         {
