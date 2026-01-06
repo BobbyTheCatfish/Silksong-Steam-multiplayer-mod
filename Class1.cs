@@ -24,7 +24,7 @@
         }
     }
 
-    [BepInPlugin("com.XvX", "XvX", "0.10.8.0")]
+    [BepInPlugin("com.XvX", "XvX", "0.10.20.0")]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -40,6 +40,7 @@
         private ConfigEntry<string> SkinLink4;
 
         private ConfigEntry<bool> ShowComments;
+        private ConfigEntry<bool> DebugText;
         private ConfigEntry<bool> ShowNametags;
 
         private ChatUI chat = new ChatUI();
@@ -53,6 +54,9 @@
 
             ShowComments = Config.Bind("General", "ShowComments", true, "Should comments be enabled?");
             SilksongMultiplayerAPI.showComments = ShowComments.Value;
+
+            DebugText = Config.Bind("DebugText", "DebugText", false, "是否开启信息显示");
+            SilksongMultiplayerAPI.debug = DebugText.Value;
 
             ShowNametags = Config.Bind("General", "ShowNames", true, "Should names be shown above players?");
             SilksongMultiplayerAPI.showNametags = ShowNametags.Value;

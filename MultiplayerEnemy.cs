@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using HarmonyLib;
 using HutongGames.PlayMaker;
@@ -22,7 +23,6 @@ namespace SilksongMultiplayer
     {
         static bool Prefix(Fsm __instance, FsmEventTarget eventTarget, FsmEvent fsmEvent)
         {
-
             if (eventTarget != null && eventTarget.target.ToString() != "self" && eventTarget.target.ToString() != "Self")
             {
                 return true;
@@ -56,6 +56,8 @@ namespace SilksongMultiplayer
                 {
                     if(__instance.GameObject.GetComponent<EnemyAvatar>().isOwner == true)
                     {
+                        UnityEngine.Debug.Log($"发送状态: Boss={__instance.Name}, Event={toState.Name}");
+
                         NetworkDataSender.SendEnemyFsmStateData(__instance.GameObjectName, toState.Name, SilksongMultiplayerAPI.currentScene);
                     }
                 }
@@ -63,6 +65,84 @@ namespace SilksongMultiplayer
         }
     }
 
+    [HarmonyPatch(typeof(DamageHeroDirectly), "OnEnter")]//投技
+    public static class DamageHeroDirectly_OnEnter_Patch
+    {
+        static bool Prefix(SetVelocity2d __instance)
+        {
+            return true;
+
+            if (__instance.Fsm.GameObject.GetComponent<EnemyAvatar>() && SilksongMultiplayerAPI.Hero_Hornet.gameObject.GetComponent<tk2dSpriteAnimator>().CurrentClip.name != "Wound")
+            {
+                UnityEngine.Debug.Log("拦截DamageHeroDirectly");
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+
+    [HarmonyPatch(typeof(SetVelocity2d), "DoSetVelocity")]//投技
+    public static class SetVelocity2d_DoSetVelocity_Patch
+    {
+        static bool Prefix(SetVelocity2d __instance)
+        {
+            return true;
+
+            if (__instance.Fsm.GameObject.GetComponent<EnemyAvatar>() && SilksongMultiplayerAPI.Hero_Hornet.gameObject.GetComponent<tk2dSpriteAnimator>().CurrentClip.name != "Wound")
+            {
+                if (__instance.Fsm.GetOwnerDefaultTarget(__instance.gameObject).gameObject.name == "Hero_Hornet(Clone)" || __instance.Fsm.GetOwnerDefaultTarget(__instance.gameObject).gameObject.name == "Player_Clone(Clone)")
+                {
+                    UnityEngine.Debug.Log("拦截DoSetVelocity");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(AnimatePositionTo), "OnUpdate")]//投技
+    public static class AnimatePositionTo_OnUpdate_Patch
+    {
+        static bool Prefix(AnimatePositionTo __instance)
+        {
+            return true;
+
+            if (__instance.Fsm.GameObject.GetComponent<EnemyAvatar>() && SilksongMultiplayerAPI.Hero_Hornet.gameObject.GetComponent<tk2dSpriteAnimator>().CurrentClip.name != "Wound")
+            {
+                if (__instance.Fsm.GetOwnerDefaultTarget(__instance.gameObject).gameObject.name == "Hero_Hornet(Clone)" || __instance.Fsm.GetOwnerDefaultTarget(__instance.gameObject).gameObject.name == "Player_Clone(Clone)")
+                {
+                    UnityEngine.Debug.Log("拦截AnimatePositionTo");
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(SetPositionToObject), "DoSetPosition")]//投技
+    public static class SetPositionToObject_DoSetVelocity_Patch
+    {
+        static bool Prefix(SetPositionToObject __instance)
+        {
+            if (__instance.Fsm.GameObject.GetComponent<EnemyAvatar>() && SilksongMultiplayerAPI.Hero_Hornet.gameObject.GetComponent<tk2dSpriteAnimator>().CurrentClip.name != "Wound")
+            {
+                return true;
+
+                if (__instance.Fsm.GetOwnerDefaultTarget(__instance.gameObject).gameObject.name == "Hero_Hornet(Clone)" || __instance.Fsm.GetOwnerDefaultTarget(__instance.gameObject).gameObject.name == "Player_Clone(Clone)")
+                {
+                    UnityEngine.Debug.Log("拦截DoSetPosition");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
     [HarmonyPatch(typeof(GetPosition), "DoGetPosition")]
     class Patch_GetPosition
     {

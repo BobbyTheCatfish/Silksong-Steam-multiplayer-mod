@@ -34,7 +34,7 @@ namespace SilksongMultiplayer
         public bool died = false;
         public bool disConnect = false;
         public float startCounter = 0.5f;
-        public float NoRespondCounter = 3;
+        public float NoRespondCounter = 5;
 
         void Start()
         {
@@ -97,7 +97,7 @@ namespace SilksongMultiplayer
 
                 if(NoRespondCounter > 0)
                 {
-                    NoRespondCounter -= Time.deltaTime;
+                    //NoRespondCounter -= Time.deltaTime;
                 }
                 else if(disConnect == false)
                 {

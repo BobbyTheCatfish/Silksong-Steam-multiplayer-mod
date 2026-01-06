@@ -25,6 +25,9 @@ namespace SilksongMultiplayer.NetworkData
         SceneOwner = 14,
         AllKnockDown = 15,
         Skin = 16,
-        ChatMessage = 17,
+        Teleport = 17,
+        EnemieDie = 18,
+        BattleSceneWave = 19,
+        ChatMessage = 20
     }
 }
