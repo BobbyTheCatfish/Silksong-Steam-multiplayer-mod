@@ -36,6 +36,12 @@ public static class Skin
 
         for (int i = 0;i < sprite.Collection.textures.Length;i++)
         {
+            string textureName = sprite.Collection.textures[i].name;
+            if (string.IsNullOrEmpty(textureName))
+            {
+                continue;
+            }
+
             string path = Path.Combine(
                 "BepInEx",
                 "plugins",
@@ -43,9 +49,8 @@ public static class Skin
                 "skin",
                 skinName,
                 sprite.Collection.name,
-                sprite.Collection.textures[i].name + ".png"
+                textureName + ".png"
             );
-
 
             cloned.textures[i] = LoadTextureFromGameRoot(path);
             cloned.materials[i].mainTexture = LoadTextureFromGameRoot(path);
