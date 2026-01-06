@@ -34,35 +34,34 @@ public static class Skin
         tk2dSpriteCollectionData cloned = CloneCollection(sprite.Collection);
         var appliedAtlases = new Texture2D[cloned.materials.Length];
 
-            for (int i = 0; i < sprite.Collection.textures.Length; i++)
+        for (int i = 0; i < sprite.Collection.textures.Length; i++)
+        {
+            string path = Path.Combine(
+                "BepInEx",
+                "plugins",
+                "XvX",
+                "skin",
+                skinName,
+                sprite.Collection.name,
+                sprite.Collection.textures[i].name + ".png"
+            );
+
+            string fullPath = Path.Combine(Paths.GameRootPath, path);
+            //Debug.Log("图片路径" + fullPath);
+            if (File.Exists(fullPath))
             {
-                string path = Path.Combine(
-                    "BepInEx",
-                    "plugins",
-                    "XvX",
-                    "skin",
-                    skinName,
-                    sprite.Collection.name,
-                    sprite.Collection.textures[i].name + ".png"
-                );
-
-                string fullPath = Path.Combine(Paths.GameRootPath, path);
-                //Debug.Log("图片路径" + fullPath);
-                if (File.Exists(fullPath))
-                {
-                    cloned.textures[i] = LoadTextureFromGameRoot(path);
-                    cloned.materials[i].mainTexture = LoadTextureFromGameRoot(path);
-                    appliedAtlases[i] = LoadTextureFromGameRoot(path);
-                }
+                cloned.textures[i] = LoadTextureFromGameRoot(path);
+                cloned.materials[i].mainTexture = LoadTextureFromGameRoot(path);
+                appliedAtlases[i] = LoadTextureFromGameRoot(path);
             }
-
-            var lockComp = gameObject.GetComponent<SkinLock>() ?? gameObject.AddComponent<SkinLock>();
-            lockComp.Cloned = cloned;
-            lockComp.Atlases = appliedAtlases;
-            lockComp.dataName = sprite.Collection.name;
-
-            ApplyClonedCollectionToSprite(sprite, cloned);
         }
+
+        var lockComp = gameObject.GetComponent<SkinLock>() ?? gameObject.AddComponent<SkinLock>();
+        lockComp.Cloned = cloned;
+        lockComp.Atlases = appliedAtlases;
+        lockComp.dataName = sprite.Collection.name;
+
+        ApplyClonedCollectionToSprite(sprite, cloned);
     }
 
     public static int GetCurrentAtlas(tk2dBaseSprite sprite)

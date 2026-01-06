@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SilksongMultiplayer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae1459bd8f5a3dd2b27bda305cf79b85509ca3c0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+60e00db22dae1013e6771d2fe80ef3dd75e38f25")]
 [assembly: System.Reflection.AssemblyProductAttribute("SilksongMultiplayer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SilksongMultiplayer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
