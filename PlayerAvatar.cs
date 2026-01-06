@@ -107,10 +107,10 @@ namespace SilksongMultiplayer
                 //ulong XvXSteamId64 = 76561198929282998UL;
                 //ulong truthSteamId64 = 76561199835946204UL;
 
-                if (steamID.m_SteamID == XvXSteamId64 || SteamUser.GetSteamID().m_SteamID == truthSteamId64)
-                {
-                    text.color = Color.yellow;
-                }
+                //if (steamID.m_SteamID == XvXSteamId64 || SteamUser.GetSteamID().m_SteamID == truthSteamId64)
+                //{
+                //    text.color = Color.yellow;
+                //}
             }
 
 

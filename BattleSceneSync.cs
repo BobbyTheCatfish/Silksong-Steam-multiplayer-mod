@@ -2,6 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 using SilksongMultiplayer;
+using SilksongMultiplayer.NetworkData;
 
 public class BattleSceneSync
 {
