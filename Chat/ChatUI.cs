@@ -24,7 +24,7 @@ namespace SilksongMultiplayer.Chat
         //private string typingMessage = "";
 
         public List<string> ChatHistory = new List<string>();
-        private static bool isActive = false;
+
         private static bool created = false;
         private Vector2 chatSize;
 
@@ -180,7 +180,6 @@ namespace SilksongMultiplayer.Chat
             _a.sizeDelta = new Vector2(400, _a.sizeDelta.y);
 
             chatInput.onSubmit.AddListener(OnSendMessage);
-            chatInput.DeactivateInputField();
 
             Debug.Log("Text input created");
 
@@ -207,6 +206,7 @@ namespace SilksongMultiplayer.Chat
             SetTextSettings(inputText);
             inputText.supportRichText = false;
             chatInput.textComponent = inputText;
+
         }
 
         public void CreateChatUI(tk2dCamera hud)
@@ -223,7 +223,7 @@ namespace SilksongMultiplayer.Chat
             CreateChatInput();
             Debug.Log("Input text created");
         }
-
+        bool enabled = false;
         void SetTextSettings(Text text)
         {
             text.fontSize = 14;
@@ -253,28 +253,33 @@ namespace SilksongMultiplayer.Chat
             }
 
 
-            if (Input.GetKeyDown(KeyCode.T) && !isActive)
+            if (Input.GetKeyDown(Configuration.OpenChatButton) && !enabled)
             {
-                isActive = true;
+                enabled = true;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape) && isActive)
+            if (Input.GetKeyDown(KeyCode.Escape) && enabled)
             {
-                isActive = false;
+                enabled = false;
                 chatInput.text = "";
             }
 
-            if (chatInput != null)
+            if (chatInput != null && enabled)
             {
-                if (isActive) chatInput.ActivateInputField();
-                else chatInput.DeactivateInputField();
+                chatInput.ActivateInputField();
             }
 
-            if (Input.GetKeyDown(KeyCode.O))
+            if (chatInput != null && chatInput.gameObject.activeInHierarchy != enabled)
             {
-                tk2dCamera hud = FindFirstObjectByType<tk2dCamera>();
-                CreateChatUI(hud);
+                Debug.Log(enabled);
+                chatInput.gameObject.SetActive(enabled);
             }
+
+            //if (Input.GetKeyDown(KeyCode.O))
+            //{
+            //    tk2dCamera hud = FindFirstObjectByType<tk2dCamera>();
+            //    CreateChatUI(hud);
+            //}
 
             //if (chatInput != null && chatInput.isFocused && (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)))
             //{
@@ -284,7 +289,7 @@ namespace SilksongMultiplayer.Chat
 
         void OnSendMessage(string msg)
         {
-            isActive = false;
+            enabled = false;
             chatInput.text = "";
 
             if (!string.IsNullOrEmpty(msg))
@@ -292,14 +297,14 @@ namespace SilksongMultiplayer.Chat
                 NetworkDataSender.SendChatMessage(msg);
                 string name = SteamFriends.GetPersonaName();
 
-                DisplayMessage(msg, name);
+                DisplayChatMessage(msg, name);
                 scroller.normalizedPosition = new Vector2(0, 0);
             }
         }
 
-        void DisplayMessage(string msg, string name)
+        static void DisplayChatMessage(string msg, string name)
         {
-            string newMsg = $"[{name}] {msg}";
+            string newMsg = $"[{name}]: {msg}";
             GameObject chatMessage = new GameObject("ChatMessage");
             chatMessage.transform.SetParent(chatDisplayGO.gameObject.transform);
 
@@ -332,7 +337,7 @@ namespace SilksongMultiplayer.Chat
         [HarmonyPostfix]
         public static void IsInputBlocked(ref bool __result)
         {
-            if (chatInput != null && isActive)
+            if (chatInput != null && chatInput.enabled)
             {
                 __result = true;
                 //Debug.Log("BLOCK INPUT");
