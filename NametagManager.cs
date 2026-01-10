@@ -27,7 +27,7 @@ namespace SilksongMultiplayer
             RectTransform rect = nameCanva.GetComponent<RectTransform>();
             rect.sizeDelta = new Vector2(2560, 1440);
 
-            if (!SilksongMultiplayerAPI.showNametags) return null;
+            if (!Configuration.ShowNametags) return null;
 
 
             var nameText = new GameObject("nameText");

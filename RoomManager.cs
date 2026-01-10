@@ -87,7 +87,7 @@ namespace SilksongMultiplayer
                 HeroController.instance.TakeDamage(base.gameObject, CollisionSide.other, 999, HazardType.ENEMY);
             }
 
-            if (SilksongMultiplayerAPI.enablePvP)
+            if (Configuration.enablePvP)
             {
                 if(GameObject.Find("Mapper NPC") && GameObject.Find("Mapper NPC").transform.Find("Enemy Range"))
                 {

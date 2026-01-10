@@ -1,13 +1,15 @@
-﻿using System;
+﻿using GlobalEnums;
+using HutongGames.PlayMaker;
+using SilksongMultiplayer.Chat;
+using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using GlobalEnums;
-using HutongGames.PlayMaker;
-using Steamworks;
+using TeamCherry.PS5;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,8 +41,13 @@ namespace SilksongMultiplayer.NetworkData
             SilksongMultiplayerAPI.customPackets.TryGetValue(packetNum, out var packetHandler);
             if (packetHandler != null)
             {
+                Debug.Log($"Doing packet handler {packetHandler}");
                 packetHandler.PacketHandler(data, senderID, offset);
                 return;
+            }
+            else if (packetNum > 20)
+            {
+                Debug.Log($"Built in packet {packetNum}");
             }
 
             switch ((NetworkMessageType)packetNum)
@@ -95,6 +102,9 @@ namespace SilksongMultiplayer.NetworkData
                     break;
                 case NetworkMessageType.ChatMessage:
                     HandleChatMessageData(data, senderID, ref offset);
+                    break;
+                case NetworkMessageType.GlobalSystemMessage:
+                    HandleGlobalSystemMessage(data, senderID, ref offset);
                     break;
                 case NetworkMessageType.Teleport:
                     HandleTeleportData(data, senderID, ref offset);
@@ -181,7 +191,7 @@ namespace SilksongMultiplayer.NetworkData
             int hazardType = PacketDeserializer.ReadInt(data, ref offset);
             int attackTypes = PacketDeserializer.ReadInt(data, ref offset);
 
-            if (SilksongMultiplayerAPI.enablePvP)
+            if (Configuration.enablePvP)
             {
                 Debug.Log($"{targetSteamId} and {SteamUser.GetSteamID().m_SteamID}");
                 if (targetSteamId == SteamUser.GetSteamID().m_SteamID)
@@ -239,20 +249,20 @@ namespace SilksongMultiplayer.NetworkData
             if (SilksongMultiplayerAPI.currentScene != sceneName)
                 return;
 
-            Debug.Log($"Boss Event Update: Boss={bossName}, Event={stateName}, From={senderID}");
+            //Debug.Log($"Boss Event Update: Boss={bossName}, Event={stateName}, From={senderID}");
 
 
 
             var go = GameObject.Find(bossName);
             if (!go)
             {
-                Debug.LogWarning($"Boss object not found: {bossName}");
+                //Debug.LogWarning($"Boss object not found: {bossName}");
                 return;
             }
 
             if (go.GetComponent<EnemyAvatar>() && go.GetComponent<EnemyAvatar>().isOwner == false)
             {
-                Debug.Log("The boss has been found");
+                //Debug.Log("The boss has been found");
                 PlayMakerFSM bossFsm = go.GetComponent<PlayMakerFSM>();
                 SilksongMultiplayerAPI.SyncState = true;
                 bossFsm.Fsm.SetState(stateName);

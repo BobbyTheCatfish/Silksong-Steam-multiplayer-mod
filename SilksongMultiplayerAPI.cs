@@ -1,13 +1,14 @@
-﻿using System;
+﻿using BepInEx.Configuration;
+using BepInEx.Logging;
+using HutongGames.PlayMaker.Actions;
+using SilksongMultiplayer.NetworkData;
+using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using BepInEx.Logging;
-using SilksongMultiplayer.NetworkData;
-using HutongGames.PlayMaker.Actions;
-using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,9 +27,6 @@ namespace SilksongMultiplayer
         public static PlayerNetworkSync playerNetworkSync;
         public static EnemyHitEffectsProfile sampleEnemyHitEffectsProfile;
         public static Font savedFont;
-        public static bool enablePvP;
-        public static float BossHPmultiplier = 1f;
-        public static float EnemyHPmultiplier = 0f;
 
         public static GameObject compassIcon;
         public static GameObject wideCompassIcon;
@@ -67,16 +65,8 @@ namespace SilksongMultiplayer
 
         public static string currentOwnedScene = "";
 
-        public static string skinName;
-        public static string skinLink1;
-        public static string skinLink2;
-        public static string skinLink3;
-        public static string skinLink4;
 
-        public static bool debug = false;
         public static bool hideOuther = false;
-        public static bool showComments = true;
-        public static bool showNametags = true;
         public static bool cheat = true;
 
         internal static Dictionary<int, NetworkCustomPacket> customPackets = new Dictionary<int, NetworkCustomPacket>();

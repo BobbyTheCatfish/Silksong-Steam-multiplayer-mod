@@ -79,9 +79,8 @@ namespace SilksongMultiplayer
 
 
 
-            if (SilksongMultiplayerAPI.showNametags)
+            if (Configuration.ShowNametags)
             {
-                nameText = NametagManager.AddNametag(transform, ref canva);
                 //canva = nameCanva.AddComponent<Canvas>();
                 //canva.renderMode = RenderMode.ScreenSpaceCamera;
                 //canva.sortingLayerName = "HUD";
@@ -258,7 +257,7 @@ namespace SilksongMultiplayer
 
             if (createColliderCounter < 0 && createColliderCounter > -100)
             {
-                if(SilksongMultiplayerAPI.enablePvP)
+                if(Configuration.enablePvP)
                 {
                     GameObject newObj = new GameObject("hitbox");
                     newObj.transform.SetPositionAndRotation(this.transform.position, Quaternion.identity);

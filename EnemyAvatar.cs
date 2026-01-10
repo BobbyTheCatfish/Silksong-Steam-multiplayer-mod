@@ -48,9 +48,9 @@ namespace SilksongMultiplayer
                 //this.GetComponent<Dummy>().boss = isBoss;
                 float Multiplier;
                 if (isBoss)
-                    Multiplier = SilksongMultiplayerAPI.BossHPmultiplier;
+                    Multiplier = Configuration.BossHPmultiplier;
                 else
-                    Multiplier = SilksongMultiplayerAPI.EnemyHPmultiplier;
+                    Multiplier = Configuration.EnemyHPmultiplier;
 
                 if ((1 + (SteamMatchmaking.GetNumLobbyMembers(SilksongMultiplayerAPI.RoomManager.currentRoomID) - 1) * Multiplier) > 0)
                     this.GetComponent<Dummy>().damageMultiplier = 1f / (1 + (SteamMatchmaking.GetNumLobbyMembers(SilksongMultiplayerAPI.RoomManager.currentRoomID) - 1) * Multiplier);

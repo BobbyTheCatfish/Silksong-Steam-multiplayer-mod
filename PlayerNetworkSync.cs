@@ -41,22 +41,18 @@ namespace SilksongMultiplayer
         void Start()
         {
             //GameManager.instance.playerData.hasBrolly = true;
+            string skinName = Configuration.SkinName;
+            string[] skinLinks = Configuration.SkinLinks;
 
-            string savePath = Path.Combine(BepInEx.Paths.GameRootPath, "BepInEx", "plugins", "XvX", "skin", SilksongMultiplayerAPI.skinName, "Knight", "atlas0.png");
-            NetworkDataReceiver.DownloadImageAsync(SilksongMultiplayerAPI.skinLink1, savePath);
-
-            savePath = Path.Combine(BepInEx.Paths.GameRootPath, "BepInEx", "plugins", "XvX", "skin", SilksongMultiplayerAPI.skinName, "Knight", "atlas1.png");
-            NetworkDataReceiver.DownloadImageAsync(SilksongMultiplayerAPI.skinLink2, savePath);
-
-            savePath = Path.Combine(BepInEx.Paths.GameRootPath, "BepInEx", "plugins", "XvX", "skin", SilksongMultiplayerAPI.skinName, "Knight", "atlas2.png");
-            NetworkDataReceiver.DownloadImageAsync(SilksongMultiplayerAPI.skinLink3, savePath);
-
-            savePath = Path.Combine(BepInEx.Paths.GameRootPath, "BepInEx", "plugins", "XvX", "skin", SilksongMultiplayerAPI.skinName, "Knight", "atlas3.png");
-            NetworkDataReceiver.DownloadImageAsync(SilksongMultiplayerAPI.skinLink4, savePath);
+            for (int i = 0; i < 4; i++)
+            {
+                string savePath = Path.Combine(BepInEx.Paths.GameRootPath, "BepInEx", "plugins", "XvX", "skin", skinName, "Knight", $"atlas{i}.png");
+                NetworkDataReceiver.DownloadImageAsync(skinLinks[i], savePath);
+            }
 
 
             this.gameObject.AddComponent<SkinLock>();
-            Skin.ChangeSkinOnObject(this.gameObject,SilksongMultiplayerAPI.skinName);
+            Skin.ChangeSkinOnObject(this.gameObject,skinName);
 
             SilksongMultiplayerAPI.playerNetworkSync = this;
 
@@ -66,7 +62,7 @@ namespace SilksongMultiplayer
 
             if (SilksongMultiplayerAPI.enterRoom)
             {
-                if(SteamMatchmaking.GetNumLobbyMembers(SilksongMultiplayerAPI.RoomManager.currentRoomID) > 1 && SilksongMultiplayerAPI.showNametags)
+                if(SteamMatchmaking.GetNumLobbyMembers(SilksongMultiplayerAPI.RoomManager.currentRoomID) > 1 && Configuration.ShowNametags)
                 {
                     nameText = NametagManager.AddNametag(transform, ref canva);
                     //canva = nameCanva.AddComponent<Canvas>();
@@ -103,7 +99,7 @@ namespace SilksongMultiplayer
                 }
 
 
-                if(SilksongMultiplayerAPI.debug)
+                if(Configuration.DebugText)
                 {
                     GameObject DebugCanva = new GameObject("DebugCanva");
                     DebugCanva.transform.SetPositionAndRotation(this.transform.position, Quaternion.identity);
@@ -215,7 +211,7 @@ namespace SilksongMultiplayer
 
             if (this.GetComponent<tk2dSprite>().Collection != savedtk2dSpriteCollectionData)
             {
-                Skin.ChangeSkinOnObject(this.gameObject, SilksongMultiplayerAPI.skinName);
+                Skin.ChangeSkinOnObject(this.gameObject, Configuration.SkinName);
                 savedtk2dSpriteCollectionData = this.GetComponent<tk2dSprite>().Collection;
             }
 
@@ -257,8 +253,8 @@ namespace SilksongMultiplayer
                 SendMapPositionToAll();
                 compassLastSendTime = Time.time;
 
-                NetworkDataSender.SendSkinData(SilksongMultiplayerAPI.skinName, SilksongMultiplayerAPI.skinLink1,
-                    SilksongMultiplayerAPI.skinLink2, SilksongMultiplayerAPI.skinLink3, SilksongMultiplayerAPI.skinLink4);
+                NetworkDataSender.SendSkinData(Configuration.SkinName, Configuration.SkinLinks[0],
+                    Configuration.SkinLinks[1], Configuration.SkinLinks[2], Configuration.SkinLinks[3]);
             }
 
 
@@ -266,7 +262,7 @@ namespace SilksongMultiplayer
             mapNameSendCounter -= Time.deltaTime;
             if (mapNameSendCounter <= 0 || SceneManager.GetActiveScene().name != mapName)
             {
-                if(SceneManager.GetActiveScene().name != mapName && SilksongMultiplayerAPI.showComments)
+                if(SceneManager.GetActiveScene().name != mapName && Configuration.ShowComments)
                 {
                     List<FeedbackEntry> entries = SilksongMultiplayerAPI.RoomManager.githubTextReader.entries;
 
