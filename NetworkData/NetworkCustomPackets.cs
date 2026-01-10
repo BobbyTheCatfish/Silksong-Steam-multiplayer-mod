@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace SilksongMultiplayer.NetworkData
 {
@@ -17,6 +18,7 @@ namespace SilksongMultiplayer.NetworkData
 
         public void SendPacket(byte[] data, EP2PSend sendType = EP2PSend.k_EP2PSendReliable)
         {
+            Debug.Log("Sending packet");
             data = PacketSerializer.Combine(
                     PacketSerializer.SerializeByte(packetNum),
                     data
@@ -27,10 +29,7 @@ namespace SilksongMultiplayer.NetworkData
 
         internal void PacketHandler(byte[] data, CSteamID senderID, int offset)
         {
-            if (PacketDeserializer.ReadByte(data, ref offset) == packetNum)
-            {
-                receiveHandler.Invoke(data, senderID, offset);
-            }
+            receiveHandler.Invoke(data, senderID, offset);
         }
     }
 }
