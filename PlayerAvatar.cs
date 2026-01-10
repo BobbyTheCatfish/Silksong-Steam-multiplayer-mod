@@ -54,11 +54,17 @@ namespace SilksongMultiplayer
 
         public void UpdateCompassPosition(Vector2 compass, Vector2 wideCompass)
         {
-            compassTargetPosition = compass;
-            compassSavedPosition = compassIcon.transform.localPosition;
+            if (compassIcon != null)
+            {
+                compassTargetPosition = compass;
+                compassSavedPosition = compassIcon.transform.localPosition;
+            }
 
-            wideCompassTargetPosition = wideCompass;
-            wideCompassSavedPosition = wideCompassIcon.transform.localPosition;
+            if (wideCompassIcon != null)
+            {
+                wideCompassTargetPosition = wideCompass;
+                wideCompassSavedPosition = wideCompassIcon.transform.localPosition;
+            }
 
             compassMovingProgress = 0;
         }
