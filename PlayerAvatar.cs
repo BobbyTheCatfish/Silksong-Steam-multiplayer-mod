@@ -81,6 +81,7 @@ namespace SilksongMultiplayer
 
             if (Configuration.ShowNametags)
             {
+                nameText = NametagManager.AddNametag(transform, ref canva, steamID);
                 //canva = nameCanva.AddComponent<Canvas>();
                 //canva.renderMode = RenderMode.ScreenSpaceCamera;
                 //canva.sortingLayerName = "HUD";
