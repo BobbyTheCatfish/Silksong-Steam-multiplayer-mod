@@ -309,10 +309,23 @@ namespace SilksongMultiplayer.Chat
             text.fontSize = 14;
         }
 
-        public void OnReceiveMessage(string msg, CSteamID steamID)
+        public static void SendGlobalSystemChatMessage(string msg)
+        {
+            GameObject chatMessage = new GameObject("ChatMessage");
+            chatMessage.transform.SetParent(chatDisplayGO.gameObject.transform);
+
+            Text text = chatMessage.AddComponent<Text>();
+            text.text = msg;
+            text.font = SilksongMultiplayerAPI.savedFont;
+            text.fontSize = 14;
+            text.color = Color.yellow;
+            text.fontStyle = FontStyle.Italic;
+        }
+
+        public static void OnReceiveMessage(string msg, CSteamID steamID)
         {
             string name = SteamFriends.GetFriendPersonaName(steamID);
-            DisplayMessage(msg, name);
+            DisplayChatMessage(msg, name);
         }
 
         [HarmonyPatch(typeof(HeroController), "IsInputBlocked")]

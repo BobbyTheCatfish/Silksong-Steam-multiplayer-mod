@@ -582,6 +582,14 @@ namespace SilksongMultiplayer.NetworkData
             string message = PacketDeserializer.ReadString(data, ref offset);
             var senderName = SteamFriends.GetFriendPersonaName(senderID);
             Debug.Log($"{senderName} > {message}");
+            ChatUI.OnReceiveMessage(message, senderID);
+        }
+
+        private void HandleGlobalSystemMessage(byte[] data, CSteamID senderID, ref int offset)
+        {
+            string message = PacketDeserializer.ReadString(data, ref offset);
+            Debug.Log($"[SYSTEM]: {message}");
+            ChatUI.SendGlobalSystemChatMessage(message);
         }
 
         private static readonly HttpClient _http = new HttpClient();

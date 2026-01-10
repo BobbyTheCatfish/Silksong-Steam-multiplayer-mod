@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using HutongGames.PlayMaker.Actions;
+using SilksongMultiplayer.Chat;
 using Steamworks;
 using UnityEngine;
 
@@ -56,6 +57,18 @@ namespace SilksongMultiplayer.NetworkData
                 PacketSerializer.SerializeString(message)
             );
 
+            Broadcast(data, EP2PSend.k_EP2PSendReliable);
+        }
+
+        public static void SendGlobalSystemChatMessage(string message)
+        {
+            Debug.Log($"Sending system message: {message}");
+            byte[] data = PacketSerializer.Combine(
+                PacketSerializer.SerializeByte((byte)NetworkMessageType.GlobalSystemMessage),
+                PacketSerializer.SerializeString(message)
+            );
+
+            ChatUI.SendGlobalSystemChatMessage(message);
             Broadcast(data, EP2PSend.k_EP2PSendReliable);
         }
 

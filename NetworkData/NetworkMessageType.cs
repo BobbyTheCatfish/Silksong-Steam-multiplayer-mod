@@ -28,6 +28,7 @@ namespace SilksongMultiplayer.NetworkData
         Teleport = 17,
         EnemieDie = 18,
         BattleSceneWave = 19,
-        ChatMessage = 20
+        ChatMessage = 20,
+        GlobalSystemMessage = 21
     }
 }
