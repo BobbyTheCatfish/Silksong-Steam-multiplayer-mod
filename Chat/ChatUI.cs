@@ -26,7 +26,7 @@ namespace SilksongMultiplayer.Chat
         public List<string> ChatHistory = new List<string>();
 
         private static bool created = false;
-        private Vector2 chatSize;
+        static bool enabled = false;
 
         const float CHAT_INPUT_HEIGHT = 50;
         const int CHAT_MARGIN = 10;
@@ -223,7 +223,7 @@ namespace SilksongMultiplayer.Chat
             CreateChatInput();
             Debug.Log("Input text created");
         }
-        bool enabled = false;
+
         void SetTextSettings(Text text)
         {
             text.fontSize = 14;
@@ -240,6 +240,7 @@ namespace SilksongMultiplayer.Chat
             _a.anchoredPosition = new Vector3(7, 0, 0);
         }
 
+        bool deactivatedOnPrevFrame = false;
         void Update()
         {
             if (!created)
@@ -269,10 +270,34 @@ namespace SilksongMultiplayer.Chat
                 chatInput.ActivateInputField();
             }
 
+            if (deactivatedOnPrevFrame)
+            {
+                var inputHandler = InputHandler.Instance;
+                inputHandler.StartAcceptingInput();
+                inputHandler.AllowPause();
+                deactivatedOnPrevFrame = false;
+            }
+
             if (chatInput != null && chatInput.gameObject.activeInHierarchy != enabled)
             {
                 Debug.Log(enabled);
                 chatInput.gameObject.SetActive(enabled);
+
+                var inputHandler = InputHandler.Instance;
+                if (inputHandler == null)
+                {
+                    Debug.LogError("No input handler");
+                    return;
+                }
+                if (enabled)
+                {
+                    inputHandler.StopAcceptingInput();
+                    inputHandler.PreventPause();
+                }
+                else
+                {
+                    deactivatedOnPrevFrame = true;
+                }
             }
 
             //if (Input.GetKeyDown(KeyCode.O))
@@ -337,7 +362,7 @@ namespace SilksongMultiplayer.Chat
         [HarmonyPostfix]
         public static void IsInputBlocked(ref bool __result)
         {
-            if (chatInput != null && chatInput.enabled)
+            if (chatInput != null && enabled)
             {
                 __result = true;
                 //Debug.Log("BLOCK INPUT");
